@@ -17,7 +17,7 @@ from GlyphsApp import *
 
 GlyphsReporterProtocol = objc.protocolNamed( "GlyphsReporter" )
 
-class ReporterPlugin ( NSObject, GlyphsReporterProtocol ):
+class ReporterPluginTopBottom ( NSObject, GlyphsReporterProtocol ):
 	
 	def init( self ):
 		"""
