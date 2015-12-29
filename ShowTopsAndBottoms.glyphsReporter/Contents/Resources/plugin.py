@@ -17,7 +17,7 @@ from GlyphsApp import *
 
 GlyphsReporterProtocol = objc.protocolNamed( "GlyphsReporter" )
 
-class ReporterPlugin ( NSObject, GlyphsReporterProtocol ):
+class ReporterPluginTopBottom ( NSObject, GlyphsReporterProtocol ):
 	
 	def init( self ):
 		"""
@@ -174,13 +174,7 @@ class ReporterPlugin ( NSObject, GlyphsReporterProtocol ):
 		drawing), which is probably what you want if you are drawing the glyph
 		yourself in self.drawBackgroundForInactiveLayer_().
 		"""
-		try:
-			if hasattr(self, 'drawBackgroundForInactiveLayers'):
-				return False
-			else:
-				return True
-		except:
-			self.logError(traceback.format_exc())
+		return True
 	
 	def drawTextAtPoint( self, text, textPosition, fontSize=10.0, fontColor=NSColor.blackColor(), align='bottomleft'):
 		"""

@@ -6,7 +6,7 @@ from AppKit import *
 
 
 
-class ShowTopsAndBottoms(ReporterPlugin):
+class ShowTopsAndBottoms(ReporterPluginTopBottom):
 
 	def settings(self):
 		self.menuName = 'Tops and Bottoms'
