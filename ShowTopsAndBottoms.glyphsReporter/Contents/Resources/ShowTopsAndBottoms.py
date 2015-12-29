@@ -43,9 +43,6 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 				numberDistance *= -1
 				lineDistance *= -1
 			
-			# brings macro window to front and clears its log:
-			
-			
 			# draw it red if it is not inside a zone:
 			drawColor = NSColor.redColor()
 			for thisZone in zones:
