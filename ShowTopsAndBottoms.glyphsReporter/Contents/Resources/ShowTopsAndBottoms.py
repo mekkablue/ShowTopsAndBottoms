@@ -3,7 +3,7 @@
 
 from plugin import *
 from AppKit import *
-
+import math
 
 
 class ShowTopsAndBottoms(ReporterPluginTopBottom):
@@ -14,13 +14,13 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 	def drawForeground(self, layer):
 		pass
 
-	def drawTop( self, bbox, drawColor, zones ):
-		self.drawTopOrBottom( bbox, drawColor, zones, True )
+	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
+		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
 		
-	def drawBottom( self, bbox, drawColor, zones ):
-		self.drawTopOrBottom( bbox, drawColor, zones, False )
+	def drawBottom( self, bbox, drawColor, zones, xHeight, italicAngle ):
+		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle )
 		
-	def drawTopOrBottom( self, bbox, defaultColor, zones, top ):
+	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle ):
 		try:
 			bboxOrigin = bbox.origin
 			bboxSize   = bbox.size
@@ -42,6 +42,11 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 			else:
 				numberDistance *= -1
 				lineDistance *= -1
+			
+			offset = (position - (xHeight * 0.5)) * math.tan(italicAngle * math.pi / 180.0)
+			left += offset
+			right += offset
+			middle += offset
 			
 			# draw it red if it is not inside a zone:
 			drawColor = NSColor.redColor()
@@ -76,11 +81,14 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 		try:
 			bbox = layer.bounds
 			if bbox.size.height > 0.0:
+				master = layer.associatedFontMaster()
+				xHeight = master.xHeight
+				italicAngle = master.italicAngle
 				zones = [(int(z.position), int(z.size)) for z in layer.associatedFontMaster().alignmentZones]
 				topZones = [z for z in zones if z[1] > 0]
 				bottomZones = [z for z in zones if z[1] < 0]
-				self.drawTop( bbox, defaultColor, topZones )
-				self.drawBottom( bbox, defaultColor, bottomZones )
+				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
+				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
 		except Exception as e:
 			self.logToConsole( "drawTopsAndBottoms: %s" % str(e) )
 	
