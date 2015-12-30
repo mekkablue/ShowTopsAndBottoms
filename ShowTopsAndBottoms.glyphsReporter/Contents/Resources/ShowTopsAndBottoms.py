@@ -76,11 +76,13 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 		try:
 			bbox = layer.bounds
 			if bbox.size.height > 0.0:
-				zones = [(int(z.position), int(z.size)) for z in layer.associatedFontMaster().alignmentZones]
-				topZones = [z for z in zones if z[1] > 0]
-				bottomZones = [z for z in zones if z[1] < 0]
-				self.drawTop( bbox, defaultColor, topZones )
-				self.drawBottom( bbox, defaultColor, bottomZones )
+				masterForTheLayer = layer.associatedFontMaster()
+				if masterForTheLayer:
+					zones = [(int(z.position), int(z.size)) for z in masterForTheLayer.alignmentZones]
+					topZones = [z for z in zones if z[1] > 0]
+					bottomZones = [z for z in zones if z[1] < 0]
+					self.drawTop( bbox, defaultColor, topZones )
+					self.drawBottom( bbox, defaultColor, bottomZones )
 		except Exception as e:
 			self.logToConsole( "drawTopsAndBottoms: %s" % str(e) )
 	
