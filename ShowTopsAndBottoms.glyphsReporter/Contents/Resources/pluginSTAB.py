@@ -17,7 +17,7 @@ from GlyphsApp import *
 
 GlyphsReporterProtocol = objc.protocolNamed( "GlyphsReporter" )
 
-class ReporterPlugin ( NSObject, GlyphsReporterProtocol ):
+class ReporterPluginSTAB ( NSObject, GlyphsReporterProtocol ):
 	
 	def init( self ):
 		"""
@@ -175,10 +175,7 @@ class ReporterPlugin ( NSObject, GlyphsReporterProtocol ):
 		yourself in self.drawBackgroundForInactiveLayer_().
 		"""
 		try:
-			if hasattr(self, 'drawBackgroundForInactiveLayers'):
-				return False
-			else:
-				return True
+			return self.drawDefaultInactiveLayers
 		except:
 			self.logError(traceback.format_exc())
 	

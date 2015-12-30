@@ -1,19 +1,16 @@
 # encoding: utf-8
 
 
-from plugin import *
+from pluginSTAB import *
 from AppKit import *
 
 
 
-class ShowTopsAndBottoms(ReporterPlugin):
+class ShowTopsAndBottoms(ReporterPluginSTAB):
 
 	def settings(self):
 		self.menuName = 'Tops and Bottoms'
 		
-	def drawForeground(self, layer):
-		pass
-
 	def drawTop( self, bbox, drawColor, zones ):
 		self.drawTopOrBottom( bbox, drawColor, zones, True )
 		
@@ -98,6 +95,3 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
 		except Exception as e:
 			self.logToConsole( "drawBackgroundForInactiveLayers: %s" % str(e) )
-
-	def drawPreview(self, layer):
-		pass
