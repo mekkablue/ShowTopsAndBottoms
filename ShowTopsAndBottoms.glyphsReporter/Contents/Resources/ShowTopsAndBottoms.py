@@ -1,23 +1,21 @@
 # encoding: utf-8
 
-
 from pluginSTAB import *
 from AppKit import *
-
-
+import math
 
 class ShowTopsAndBottoms(ReporterPluginSTAB):
 
 	def settings(self):
 		self.menuName = 'Tops and Bottoms'
 		
-	def drawTop( self, bbox, drawColor, zones ):
-		self.drawTopOrBottom( bbox, drawColor, zones, True )
+	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
+		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
 		
-	def drawBottom( self, bbox, drawColor, zones ):
-		self.drawTopOrBottom( bbox, drawColor, zones, False )
+	def drawBottom( self, bbox, drawColor, zones, xHeight, italicAngle ):
+		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle )
 		
-	def drawTopOrBottom( self, bbox, defaultColor, zones, top ):
+	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle ):
 		try:
 			bboxOrigin = bbox.origin
 			bboxSize   = bbox.size
@@ -26,11 +24,10 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 			middle = left + bboxSize.width / 2.0
 			position = bboxOrigin.y
 			
-			offset = 20.0
 			surplus = 30.0
 			scale = self.getScale()
-			numberDistance = (offset+5.0) / scale
-			lineDistance = (offset-10.0) / scale
+			numberDistance = 25.0 / scale
+			lineDistance = 10.0 / scale
 
 			# adjust values for top/bottom:
 			if top:
@@ -40,8 +37,12 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 				numberDistance *= -1
 				lineDistance *= -1
 			
-			# brings macro window to front and clears its log:
-			
+			# adjust values for italic angle:
+			if italicAngle != 0.0:
+				offset = (position - xHeight*0.5) * math.tan(italicAngle * math.pi / 180.0)
+				left += offset
+				right += offset
+				middle += offset
 			
 			# draw it red if it is not inside a zone:
 			drawColor = NSColor.redColor()
@@ -78,11 +79,13 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 			if bbox.size.height > 0.0:
 				masterForTheLayer = layer.associatedFontMaster()
 				if masterForTheLayer:
+					xHeight = masterForTheLayer.xHeight
+					italicAngle = masterForTheLayer.italicAngle
 					zones = [(int(z.position), int(z.size)) for z in masterForTheLayer.alignmentZones]
 					topZones = [z for z in zones if z[1] > 0]
 					bottomZones = [z for z in zones if z[1] < 0]
-					self.drawTop( bbox, defaultColor, topZones )
-					self.drawBottom( bbox, defaultColor, bottomZones )
+					self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
+					self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
 		except Exception as e:
 			self.logToConsole( "drawTopsAndBottoms: %s" % str(e) )
 	

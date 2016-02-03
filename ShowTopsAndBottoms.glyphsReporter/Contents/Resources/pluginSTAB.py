@@ -145,7 +145,6 @@ class ReporterPluginSTAB ( NSObject, GlyphsReporterProtocol ):
 			if self.controller:
 				if hasattr(self, 'drawBackgroundForInactiveLayers'):
 					self.drawBackgroundForInactiveLayers(Layer)
-				
 
 			else:
 				if hasattr(self, 'drawPreview'):
