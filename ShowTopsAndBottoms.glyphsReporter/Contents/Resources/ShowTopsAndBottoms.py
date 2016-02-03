@@ -1,19 +1,14 @@
 # encoding: utf-8
 
-
-from plugin import *
+from pluginSTAB import *
 from AppKit import *
 import math
 
-
-class ShowTopsAndBottoms(ReporterPluginTopBottom):
+class ShowTopsAndBottoms(ReporterPluginSTAB):
 
 	def settings(self):
 		self.menuName = 'Tops and Bottoms'
 		
-	def drawForeground(self, layer):
-		pass
-
 	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
 		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
 		
@@ -29,11 +24,10 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 			middle = left + bboxSize.width / 2.0
 			position = bboxOrigin.y
 			
-			offset = 20.0
 			surplus = 30.0
 			scale = self.getScale()
-			numberDistance = (offset+5.0) / scale
-			lineDistance = (offset-10.0) / scale
+			numberDistance = 25.0 / scale
+			lineDistance = 10.0 / scale
 
 			# adjust values for top/bottom:
 			if top:
@@ -43,10 +37,12 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 				numberDistance *= -1
 				lineDistance *= -1
 			
-			offset = (position - (xHeight * 0.5)) * math.tan(italicAngle * math.pi / 180.0)
-			left += offset
-			right += offset
-			middle += offset
+			# adjust values for italic angle:
+			if italicAngle != 0.0:
+				offset = (position - xHeight*0.5) * math.tan(italicAngle * math.pi / 180.0)
+				left += offset
+				right += offset
+				middle += offset
 			
 			# draw it red if it is not inside a zone:
 			drawColor = NSColor.redColor()
@@ -81,14 +77,15 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 		try:
 			bbox = layer.bounds
 			if bbox.size.height > 0.0:
-				master = layer.associatedFontMaster()
-				xHeight = master.xHeight
-				italicAngle = master.italicAngle
-				zones = [(int(z.position), int(z.size)) for z in layer.associatedFontMaster().alignmentZones]
-				topZones = [z for z in zones if z[1] > 0]
-				bottomZones = [z for z in zones if z[1] < 0]
-				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
-				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
+				masterForTheLayer = layer.associatedFontMaster()
+				if masterForTheLayer:
+					xHeight = masterForTheLayer.xHeight
+					italicAngle = masterForTheLayer.italicAngle
+					zones = [(int(z.position), int(z.size)) for z in masterForTheLayer.alignmentZones]
+					topZones = [z for z in zones if z[1] > 0]
+					bottomZones = [z for z in zones if z[1] < 0]
+					self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
+					self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
 		except Exception as e:
 			self.logToConsole( "drawTopsAndBottoms: %s" % str(e) )
 	
@@ -103,6 +100,3 @@ class ShowTopsAndBottoms(ReporterPluginTopBottom):
 			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
 		except Exception as e:
 			self.logToConsole( "drawBackgroundForInactiveLayers: %s" % str(e) )
-
-	def drawPreview(self, layer):
-		pass
