@@ -7,7 +7,12 @@ import math
 class ShowTopsAndBottoms(ReporterPluginSTAB):
 
 	def settings(self):
-		self.menuName = 'Tops and Bottoms'
+		self.menuName = Glyphs.localize({
+			'en': u'Tops and Bottoms',
+			'es': u'superiores e inferiores',
+			'de': u'höchste und tiefste Stellen',
+			'nl': u'hoogste en laagste plekken'
+		})
 		
 	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
 		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
