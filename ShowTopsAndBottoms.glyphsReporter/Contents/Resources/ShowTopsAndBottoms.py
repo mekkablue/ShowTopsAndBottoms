@@ -61,6 +61,7 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 
 			# set line attributes:
 			drawColor.set()
+			storedLineWidth = NSBezierPath.defaultLineWidth()
 			NSBezierPath.setDefaultLineWidth_( 1.0/scale )
 			
 			# draw horizontal line on canvas:
@@ -72,6 +73,9 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 			startPoint = NSPoint( middle, position )
 			endPoint = NSPoint( middle, position+lineDistance )
 			NSBezierPath.strokeLineFromPoint_toPoint_( startPoint, endPoint )
+			
+			# restore default line width:
+			NSBezierPath.setDefaultLineWidth_( storedLineWidth )
 			
 			# draw number on canvas:
 			self.drawTextAtPoint( "%.1f" % position, NSPoint(middle,position+numberDistance), fontColor=drawColor )
