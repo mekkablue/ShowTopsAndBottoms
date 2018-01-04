@@ -1,7 +1,8 @@
 # encoding: utf-8
 
 from pluginSTAB import *
-from AppKit import *
+from Foundation import NSPoint
+from AppKit import NSColor, NSBezierPath
 import math
 
 class ShowTopsAndBottoms(ReporterPluginSTAB):
