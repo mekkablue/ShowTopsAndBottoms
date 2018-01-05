@@ -1,10 +1,21 @@
 # encoding: utf-8
 
-from pluginSTAB import *
-from AppKit import *
-import math
+###########################################################################################################
+#
+#
+#	Reporter Plugin
+#
+#	Read the docs:
+#	https://github.com/schriftgestalt/GlyphsSDK/tree/master/Python%20Templates/Reporter
+#
+#
+###########################################################################################################
 
-class ShowTopsAndBottoms(ReporterPluginSTAB):
+import objc
+from GlyphsApp import *
+from GlyphsApp.plugins import *
+
+class ShowTopsAndBottoms(ReporterPlugin):
 
 	def settings(self):
 		self.menuName = Glyphs.localize({
@@ -13,7 +24,7 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 			'de': u'höchste und tiefste Stellen',
 			'nl': u'hoogste en laagste plekken'
 		})
-		
+	
 	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
 		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
 		
@@ -98,14 +109,18 @@ class ShowTopsAndBottoms(ReporterPluginSTAB):
 		except Exception as e:
 			self.logToConsole( "drawTopsAndBottoms: %s" % str(e) )
 	
-	def drawBackground( self, layer ):
+	def background( self, layer ):
 		try:
 			self.drawTopsAndBottoms( layer, NSColor.darkGrayColor() )
 		except Exception as e:
-			self.logToConsole( "drawBackground: %s" % str(e) )
+			self.logToConsole( "background: %s" % str(e) )
 
-	def drawBackgroundForInactiveLayers(self, layer):
+	def inactiveLayers(self, layer):
 		try:
 			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
 		except Exception as e:
-			self.logToConsole( "drawBackgroundForInactiveLayers: %s" % str(e) )
+			self.logToConsole( "inactiveLayers: %s" % str(e) )
+	
+	def needsExtraMainOutlineDrawingForInactiveLayer_(self, layer):
+		return True
+	
