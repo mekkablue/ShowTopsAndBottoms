@@ -11,9 +11,9 @@
 #
 ###########################################################################################################
 
-import objc
 from GlyphsApp import *
 from GlyphsApp.plugins import *
+from math import tan, pi
 
 class ShowTopsAndBottoms(ReporterPlugin):
 
@@ -54,7 +54,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		
 		# adjust values for italic angle:
 		if italicAngle != 0.0:
-			offset = (position - xHeight*0.5) * math.tan(italicAngle * math.pi / 180.0)
+			offset = (position - xHeight*0.5) * tan(italicAngle * pi / 180.0)
 			left += offset
 			right += offset
 			middle += offset
