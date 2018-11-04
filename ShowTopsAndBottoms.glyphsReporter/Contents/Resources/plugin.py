@@ -157,21 +157,32 @@ class ShowTopsAndBottoms(ReporterPlugin):
 						if thisNode.y in heights:
 							self.drawHandleForNode( thisNode,  )
 	
-	def foreground(self, layer):
+	def foreground( self, layer ):
 		if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
-			self.markNodesOffMetrics( layer )
+			if not self.spaceBarHeldDown( layer ):
+				self.markNodesOffMetrics( layer )
 	
 	def background( self, layer ):
-		self.drawTopsAndBottoms( layer, NSColor.darkGrayColor() )
+		shouldDisplay = not self.spaceBarHeldDown( layer )
+		if shouldDisplay:
+			self.drawTopsAndBottoms( layer, NSColor.darkGrayColor() )
 
 	# def inactiveLayers(self, layer):
 	# 	self.inactiveLayerForeground(layer)
 		
 	def inactiveLayerForeground(self, layer):
-		self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
-		if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
-			self.markNodesOffMetrics( layer, color=NSColor.orangeColor() )
-		
+		shouldDisplay = not self.spaceBarHeldDown( layer )
+		if shouldDisplay:
+			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
+			if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
+				self.markNodesOffMetrics( layer, color=NSColor.orangeColor() )
+	
+	def spaceBarHeldDown(self, layer):
+		try:
+			return bool(layer.parent.parent.parent.windowController().SpaceKey())
+		except:
+			return False
+	
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, layer):
 		return True
 	
