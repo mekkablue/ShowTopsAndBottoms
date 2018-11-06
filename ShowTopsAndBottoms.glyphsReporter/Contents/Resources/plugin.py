@@ -14,11 +14,10 @@
 from GlyphsApp import *
 from GlyphsApp.plugins import *
 from math import tan, pi
+shoulderSet = ["arabic", "hebrew", "thai", "lao", "tibet", "myanmar"].__add__( list(GSGlyphsInfo.indicScripts()) )
 
 class ShowTopsAndBottoms(ReporterPlugin):
-	shoulderSet = list(GSGlyphsInfo.indicScripts()) + ["arabic", "hebrew", "thai", "lao", "tibet", "myanmar"]
-
-	def settings(self):
+s	def settings(self):
 		self.menuName = Glyphs.localize({
 			'en': u'Tops and Bottoms',
 			'es': u'superiores e inferiores',
@@ -145,7 +144,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 					1.0+masterForTheLayer.ascender if glyph.subCategory == "Lowercase" else None,
 					1.0+masterForTheLayer.capHeight if glyph.subCategory != "Lowercase" else None,
 					1.0+masterForTheLayer.customParameters["smallCapHeight"] if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
-					1.0+masterForTheLayer.customParameters["shoulderHeight"] if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in self.shoulderSet else None,
+					1.0+masterForTheLayer.customParameters["shoulderHeight"] if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
 					1.0+masterForTheLayer.xHeight if glyph.subCategory == "Lowercase" else None,
 					-1.0, # 1u below the baseline
 					-1.0+masterForTheLayer.descender if glyph.subCategory == "Lowercase" else None,
