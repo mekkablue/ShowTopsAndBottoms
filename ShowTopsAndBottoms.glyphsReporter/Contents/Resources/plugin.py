@@ -17,7 +17,7 @@ from math import tan, pi
 shoulderSet = ["arabic", "hebrew", "thai", "lao", "tibet", "myanmar"].__add__( list(GSGlyphsInfo.indicScripts()) )
 
 class ShowTopsAndBottoms(ReporterPlugin):
-s	def settings(self):
+	def settings(self):
 		self.menuName = Glyphs.localize({
 			'en': u'Tops and Bottoms',
 			'es': u'superiores e inferiores',
