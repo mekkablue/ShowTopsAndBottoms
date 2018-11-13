@@ -14,7 +14,10 @@
 from GlyphsApp import *
 from GlyphsApp.plugins import *
 from math import tan, pi
-shoulderSet = ["arabic", "hebrew", "thai", "lao", "tibet", "myanmar"].__add__( list(GSGlyphsInfo.indicScripts()) )
+
+shoulderDefaults = list( GSGlyphsInfo.indicScripts() )
+shoulderAdditions = ["arabic", "hebrew", "thai", "lao", "tibet", "myanmar"]
+shoulderSet = shoulderDefaults + shoulderAdditions
 
 class ShowTopsAndBottoms(ReporterPlugin):
 	def settings(self):
