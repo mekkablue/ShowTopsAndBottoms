@@ -4,7 +4,7 @@ This is a plugin for the [Glyphs font editor](http://glyphsapp.com/) by Georg Se
 
 ![Tops and Bottoms.](ShowTopsAndBottoms.png "Show Tops and Bottoms")
 
-After installation, it will add the menu item *View > Show Tops and Bottoms*. You can set a keyboard shortcut in System Preferences.
+After installation, it will add the menu item *View > Show Tops and Bottoms* (es: *Mostrar superiores e inferiores,* de: *Höchste und tiefste Stellen anzeigen,* nl: *Toon hoogste en laagste plekken,* fr: *Afficher les hauts et les bas,* zh: 显示底部到顶点的数值). You can set a keyboard shortcut in System Preferences.
 
 ### Installation
 

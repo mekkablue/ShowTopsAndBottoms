@@ -30,6 +30,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			'de': u'Höchste und tiefste Stellen',
 			'nl': u'hoogste en laagste plekken',
 			'fr': u'les hauts et les bas',
+			'zh': u'底部到顶点的数值',
 		})
 		
 		Glyphs.registerDefault("com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics", True)

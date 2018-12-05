@@ -17,15 +17,15 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleVersion</key>
-	<string>17</string>
+	<string>18</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.5</string>
+	<string>1.2.6</string>
 	<key>UpdateFeedURL</key>
 	<string>https://raw.githubusercontent.com/mekkablue/ShowTopsAndBottoms/master/ShowTopsAndBottoms.glyphsReporter/Contents/Info.plist</string>
 	<key>productPageURL</key>
 	<string>https://github.com/mekkablue/ShowTopsAndBottoms</string>
 	<key>productReleaseNotes</key>
-	<string>Fix "missing argument self" error, hardcoded attempt.</string>
+	<string>Added Chinese localisation (thx 张大可 and 杨翕丞).</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright, Rainer Erich Scheichelbauer, 2015-2018</string>
 	<key>NSPrincipalClass</key>
