@@ -64,7 +64,8 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		
 		# adjust values for italic angle:
 		if italicAngle != 0.0:
-			offset = (position - xHeight*0.5) * tan(italicAngle * pi / 180.0)
+			bboxCenterHeight = bboxOrigin.y+bboxSize.height*0.5
+			offset = (position - bboxCenterHeight) * tan(italicAngle * pi / 180.0)
 			left += offset
 			right += offset
 			middle += offset
