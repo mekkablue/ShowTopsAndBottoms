@@ -1,4 +1,5 @@
 # encoding: utf-8
+from __future__ import division, print_function, unicode_literals
 
 ###########################################################################################################
 #
@@ -11,6 +12,7 @@
 #
 ###########################################################################################################
 
+import objc
 from GlyphsApp import *
 from GlyphsApp.plugins import *
 from math import tan, pi
@@ -23,6 +25,7 @@ shoulderSet = (
 	)
 
 class ShowTopsAndBottoms(ReporterPlugin):
+	@objc.python_method
 	def settings(self):
 		self.menuName = Glyphs.localize({
 			'en': u'Tops and Bottoms',
@@ -32,15 +35,41 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			'fr': u'les hauts et les bas',
 			'zh': u'🚧底部到顶点的数值',
 		})
-		
 		Glyphs.registerDefault("com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics", True)
+		self.generalContextMenus = [
+			{
+				'name': Glyphs.localize({
+					'en': u"‘Show Tops and Bottoms’ Options:", 
+					'de': u"Einstellungen für »Höchste und tiefste Stellen anzeigen«:", 
+					'es': u"Opciones para ‘Mostrar superiores e inferiores’:", 
+					'nl': u"Instellingen voor ‘Toon hoogste en laagste plekken’:", 
+					'fr': u"Options pour «Afficher les hauts et les bas»:",
+					}), 
+				'action': None,
+			},
+			{
+				'name': Glyphs.localize({
+					'en': u"Mark nodes just off metric lines",
+					'de': u"Punkte markieren, wenn sie die Linie knapp verpassen",
+					'es': u"Marcar nodos que están cerca de la línea métrica",
+					'nl': u"Punten markeren als ze net naast de hoogtes liggen",
+					'fr': u"Indiquer points qui se trouvent juste à côté des lignes",
+					}), 
+				'action': self.toggleMarkNodesOffMetrics,
+				'state': Glyphs.defaults[ "com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics" ],
+			},
+			]
+		
 	
+	@objc.python_method
 	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
 		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
-		
+	
+	@objc.python_method
 	def drawBottom( self, bbox, drawColor, zones, xHeight, italicAngle ):
 		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle )
-		
+	
+	@objc.python_method
 	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle ):
 		bboxOrigin = bbox.origin
 		bboxSize   = bbox.size
@@ -101,12 +130,14 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		# draw number on canvas:
 		self.drawTextAtPoint( "%.1f" % position, NSPoint(middle,position+numberDistance), fontColor=drawColor )
 	
+	@objc.python_method
 	def zonesForMaster( self, master ):
 		zones = [(int(z.position), int(z.size)) for z in master.alignmentZones]
 		topZones = [z for z in zones if z[1] > 0]
 		bottomZones = [z for z in zones if z[1] < 0]
 		return topZones, bottomZones
 	
+	@objc.python_method
 	def drawTopsAndBottoms( self, layer, defaultColor ):
 		bbox = layer.bounds
 		if bbox.size.height > 0.0:
@@ -118,6 +149,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
 				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
 	
+	@objc.python_method
 	def drawHandleForNode(self, node):
 		# calculate handle size:
 		handleSizes = (5, 8, 12) # possible user settings
@@ -139,6 +171,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		rect.size = NSSize(handleSize, handleSize)
 		NSBezierPath.bezierPathWithOvalInRect_(rect).fill()
 	
+	@objc.python_method
 	def markNodesOffMetrics( self, layer, color=NSColor.colorWithRed_green_blue_alpha_(1.0, 0.6, 0.1, 0.7) ):
 		if layer.paths:
 			# set the color for drawing:
@@ -162,11 +195,13 @@ class ShowTopsAndBottoms(ReporterPlugin):
 						if thisNode.y in heights:
 							self.drawHandleForNode( thisNode,  )
 	
+	@objc.python_method
 	def foreground( self, layer ):
 		if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
 			if not self.spaceBarHeldDown( layer ):
 				self.markNodesOffMetrics( layer )
 	
+	@objc.python_method
 	def background( self, layer ):
 		shouldDisplay = not self.spaceBarHeldDown( layer )
 		if shouldDisplay:
@@ -174,7 +209,8 @@ class ShowTopsAndBottoms(ReporterPlugin):
 
 	# def inactiveLayers(self, layer):
 	# 	self.inactiveLayerForeground(layer)
-		
+	
+	@objc.python_method
 	def inactiveLayerForeground(self, layer):
 		shouldDisplay = not self.spaceBarHeldDown( layer )
 		if shouldDisplay:
@@ -182,6 +218,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
 				self.markNodesOffMetrics( layer, color=NSColor.orangeColor() )
 	
+	@objc.python_method
 	def spaceBarHeldDown(self, layer):
 		try:
 			return bool(layer.parent.parent.parent.windowController().SpaceKey())
@@ -190,47 +227,28 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, layer):
 		return True
-	
-	def conditionalContextMenus(self):
-		return [
-		{
-			'name': Glyphs.localize({
-				'en': u"‘Show Tops and Bottoms’ Options:", 
-				'de': u"Einstellungen für »Höchste und tiefste Stellen anzeigen«:", 
-				'es': u"Opciones para ‘Mostrar superiores e inferiores’:", 
-				'nl': u"Instellingen voor ‘Toon hoogste en laagste plekken’:", 
-				'fr': u"Options pour «Afficher les hauts et les bas»:",
-				}), 
-			'action': None,
-		},
-		{
-			'name': Glyphs.localize({
-				'en': u"Mark nodes just off metric lines",
-				'de': u"Punkte markieren, wenn sie die Linie knapp verpassen",
-				'es': u"Marcar nodos que están cerca de la línea métrica",
-				'nl': u"Punten markeren als ze net naast de hoogtes liggen",
-				'fr': u"Indiquer points qui se trouvent juste à côté des lignes",
-				}), 
-			'action': self.toggleMarkNodesOffMetrics,
-			'state': Glyphs.defaults[ "com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics" ],
-		},
-		]
 
 	def toggleMarkNodesOffMetrics(self):
 		self.toggleSetting("markNodesOffMetrics")
 	
+	@objc.python_method
 	def toggleSetting(self, prefName):
 		pref = "com.mekkablue.ShowTopsAndBottoms.%s" % prefName
 		Glyphs.defaults[pref] = not bool(Glyphs.defaults[pref])
 	
-	def addMenuItemsForEvent_toMenu_(self, event, contextMenu):
-		if self.generalContextMenus:
-			setUpMenuHelper(contextMenu, self.generalContextMenus, self)
-		
-		newSeparator = NSMenuItem.separatorItem()
-		contextMenu.addItem_(newSeparator)
-		
-		contextMenus = self.conditionalContextMenus()
-		if contextMenus:
-			setUpMenuHelper(contextMenu, contextMenus, self)
+	# def addMenuItemsForEvent_toMenu_(self, event, contextMenu):
+	# 	if self.generalContextMenus:
+	# 		setUpMenuHelper(contextMenu, self.generalContextMenus, self)
+	#
+	# 	newSeparator = NSMenuItem.separatorItem()
+	# 	contextMenu.addItem_(newSeparator)
+	#
+	# 	contextMenus = self.conditionalContextMenus()
+	# 	if contextMenus:
+	# 		setUpMenuHelper(contextMenu, contextMenus, self)
+
+	@objc.python_method
+	def __file__(self):
+		"""Please leave this method unchanged"""
+		return __file__
 	
