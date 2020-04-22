@@ -35,6 +35,10 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			'fr': u'les hauts et les bas',
 			'zh': u'🚧底部到顶点的数值',
 		})
+		
+		self.keyboardShortcut = 't'
+		self.keyboardShortcutModifier = NSControlKeyMask | NSCommandKeyMask | NSAlternateKeyMask
+		
 		Glyphs.registerDefault("com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics", True)
 		self.generalContextMenus = [
 			{
