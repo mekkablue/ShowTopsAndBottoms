@@ -66,12 +66,12 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		
 	
 	@objc.python_method
-	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle ):
-		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle )
+	def drawTop( self, bbox, drawColor, zones, xHeight, italicAngle, drawNumbers=True ):
+		self.drawTopOrBottom( bbox, drawColor, zones, True, xHeight, italicAngle, drawNumbers=drawNumbers )
 	
 	@objc.python_method
-	def drawBottom( self, bbox, drawColor, zones, xHeight, italicAngle ):
-		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle )
+	def drawBottom( self, bbox, drawColor, zones, xHeight, italicAngle, drawNumbers=True ):
+		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle, drawNumbers=drawNumbers )
 	
 	@objc.python_method
 	def conditionsAreMetForDrawing(self):
@@ -87,7 +87,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		return False
 	
 	@objc.python_method
-	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle ):
+	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle, drawNumbers=True ):
 		bboxOrigin = bbox.origin
 		bboxSize   = bbox.size
 		left = bboxOrigin.x
@@ -136,16 +136,17 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		rightPoint = NSPoint( right+surplus, position )
 		NSBezierPath.strokeLineFromPoint_toPoint_( leftPoint, rightPoint )
 		
-		# draw vertical line on canvas:
-		startPoint = NSPoint( middle, position )
-		endPoint = NSPoint( middle, position+lineDistance )
-		NSBezierPath.strokeLineFromPoint_toPoint_( startPoint, endPoint )
+		if drawNumbers:
+			# draw vertical line on canvas:
+			startPoint = NSPoint( middle, position )
+			endPoint = NSPoint( middle, position+lineDistance )
+			NSBezierPath.strokeLineFromPoint_toPoint_( startPoint, endPoint )
+		
+			# draw number on canvas:
+			self.drawTextAtPoint( "%.1f" % position, NSPoint(middle,position+numberDistance), fontColor=drawColor )
 		
 		# restore default line width:
 		NSBezierPath.setDefaultLineWidth_( storedLineWidth )
-		
-		# draw number on canvas:
-		self.drawTextAtPoint( "%.1f" % position, NSPoint(middle,position+numberDistance), fontColor=drawColor )
 	
 	@objc.python_method
 	def zonesForMaster( self, master ):
@@ -155,7 +156,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		return topZones, bottomZones
 	
 	@objc.python_method
-	def drawTopsAndBottoms( self, layer, defaultColor ):
+	def drawTopsAndBottoms( self, layer, defaultColor, drawNumbers=True ):
 		bbox = layer.bounds
 		if bbox.size.height > 0.0:
 			masterForTheLayer = layer.associatedFontMaster()
@@ -163,8 +164,8 @@ class ShowTopsAndBottoms(ReporterPlugin):
 				xHeight = masterForTheLayer.xHeight
 				italicAngle = masterForTheLayer.italicAngle
 				topZones, bottomZones = self.zonesForMaster( masterForTheLayer )
-				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle )
-				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle )
+				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle, drawNumbers=drawNumbers )
+				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle, drawNumbers=drawNumbers )
 	
 	@objc.python_method
 	def drawHandleForNode(self, node):
@@ -225,8 +226,14 @@ class ShowTopsAndBottoms(ReporterPlugin):
 
 	@objc.python_method
 	def inactiveLayerForeground(self, layer):
-		if self.getScale() >= 0.07 and self.conditionsAreMetForDrawing():
-			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
+		scale = self.getScale()
+		if scale < 0.07:
+			drawNumbers = False
+		else:
+			drawNumbers = True
+			
+		if self.getScale() >= 0.025 and self.conditionsAreMetForDrawing():
+			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor(), drawNumbers=drawNumbers )
 			if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
 				self.markNodesOffMetrics( layer, color=NSColor.orangeColor() )
 	
