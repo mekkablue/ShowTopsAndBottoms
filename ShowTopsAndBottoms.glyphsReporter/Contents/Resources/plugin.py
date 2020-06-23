@@ -74,6 +74,19 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		self.drawTopOrBottom( bbox, drawColor, zones, False, xHeight, italicAngle )
 	
 	@objc.python_method
+	def conditionsAreMetForDrawing(self):
+		"""
+		Don't activate if text or pan (hand) tool are active.
+		"""
+		currentController = self.controller.view().window().windowController()
+		if currentController:
+			tool = currentController.toolDrawDelegate()
+			handToolIsActive = tool.isKindOfClass_( NSClassFromString("GlyphsToolHand") )
+			if not handToolIsActive: 
+				return True
+		return False
+	
+	@objc.python_method
 	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle ):
 		bboxOrigin = bbox.origin
 		bboxSize   = bbox.size
@@ -201,33 +214,21 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	@objc.python_method
 	def foreground( self, layer ):
-		if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
-			if not self.spaceBarHeldDown( layer ):
+		if self.getScale() >= 0.05 and Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
+			if not self.conditionsAreMetForDrawing():
 				self.markNodesOffMetrics( layer )
 	
 	@objc.python_method
 	def background( self, layer ):
-		shouldDisplay = not self.spaceBarHeldDown( layer )
-		if shouldDisplay:
+		if self.getScale() >= 0.025 and self.conditionsAreMetForDrawing():
 			self.drawTopsAndBottoms( layer, NSColor.darkGrayColor() )
 
-	# def inactiveLayers(self, layer):
-	# 	self.inactiveLayerForeground(layer)
-	
 	@objc.python_method
 	def inactiveLayerForeground(self, layer):
-		shouldDisplay = not self.spaceBarHeldDown( layer )
-		if shouldDisplay:
+		if self.getScale() >= 0.07 and self.conditionsAreMetForDrawing():
 			self.drawTopsAndBottoms( layer, NSColor.lightGrayColor() )
 			if Glyphs.defaults["com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics"]:
 				self.markNodesOffMetrics( layer, color=NSColor.orangeColor() )
-	
-	@objc.python_method
-	def spaceBarHeldDown(self, layer):
-		try:
-			return bool(layer.parent.parent.parent.windowController().SpaceKey())
-		except:
-			return False
 	
 	def needsExtraMainOutlineDrawingForInactiveLayer_(self, layer):
 		return True
@@ -240,17 +241,6 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		pref = "com.mekkablue.ShowTopsAndBottoms.%s" % prefName
 		Glyphs.defaults[pref] = not bool(Glyphs.defaults[pref])
 	
-	# def addMenuItemsForEvent_toMenu_(self, event, contextMenu):
-	# 	if self.generalContextMenus:
-	# 		setUpMenuHelper(contextMenu, self.generalContextMenus, self)
-	#
-	# 	newSeparator = NSMenuItem.separatorItem()
-	# 	contextMenu.addItem_(newSeparator)
-	#
-	# 	contextMenus = self.conditionalContextMenus()
-	# 	if contextMenus:
-	# 		setUpMenuHelper(contextMenu, contextMenus, self)
-
 	@objc.python_method
 	def __file__(self):
 		"""Please leave this method unchanged"""
