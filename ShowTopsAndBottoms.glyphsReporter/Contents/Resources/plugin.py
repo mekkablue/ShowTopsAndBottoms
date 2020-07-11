@@ -202,8 +202,8 @@ class ShowTopsAndBottoms(ReporterPlugin):
 				heights = (
 					1.0+masterForTheLayer.ascender if glyph.subCategory == "Lowercase" else None,
 					1.0+masterForTheLayer.capHeight if glyph.subCategory != "Lowercase" else None,
-					1.0+masterForTheLayer.customParameters["smallCapHeight"] if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
-					1.0+masterForTheLayer.customParameters["shoulderHeight"] if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
+					1.0+int(masterForTheLayer.customParameters["smallCapHeight"]) if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
+					1.0+int(masterForTheLayer.customParameters["shoulderHeight"]) if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
 					1.0+masterForTheLayer.xHeight if glyph.subCategory == "Lowercase" else None,
 					-1.0, # 1u below the baseline
 					-1.0+masterForTheLayer.descender if glyph.subCategory == "Lowercase" else None,
