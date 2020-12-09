@@ -25,16 +25,16 @@ shoulderSet = (
 	)
 
 def getMetricsValueForGlyphs3(baseObjectGlyph2,baseObjectGlyph3,valueName, defaultForGlyphs3=0, defaultForGlyphs2=0):
-    # Glyphs 2 compatibility code
-    def getValueForGlyphs2():
-        if hasattr(baseObjectGlyph2, valueName):
-            if getattr(baseObjectGlyph2, valueName) is not None:
-                return getattr(baseObjectGlyph2, valueName)
-            else:
-                return defaultForGlyphs2
-        else:
-            return defaultForGlyphs2
-            
+	# Glyphs 2 compatibility code
+	def getValueForGlyphs2():
+		if hasattr(baseObjectGlyph2, valueName):
+			if getattr(baseObjectGlyph2, valueName) is not None:
+				return getattr(baseObjectGlyph2, valueName)
+			else:
+				return defaultForGlyphs2
+		else:
+			return defaultForGlyphs2
+			
 	if hasattr(Glyphs, 'versionNumber'):
 		if Glyphs.versionNumber >= 3 :
 			name = valueName.lower()
