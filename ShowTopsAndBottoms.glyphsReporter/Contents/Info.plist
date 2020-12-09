@@ -13,9 +13,9 @@
 	<key>CFBundleName</key>
 	<string>ShowTopsAndBottoms</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.5</string>
+	<string>2.0.6</string>
 	<key>CFBundleVersion</key>
-	<string>25</string>
+	<string>26</string>
 	<key>UpdateFeedURL</key>
 	<string>https://raw.githubusercontent.com/mekkablue/ShowTopsAndBottoms/master/ShowTopsAndBottoms.glyphsReporter/Contents/Info.plist</string>
 	<key>productPageURL</key>
