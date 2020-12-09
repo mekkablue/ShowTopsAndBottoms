@@ -25,31 +25,27 @@ shoulderSet = (
 	)
 
 def getMetricsValueForGlyphs3(baseObjectGlyph2,baseObjectGlyph3,valueName, defaultForGlyphs3=0, defaultForGlyphs2=0):
+    # Glyphs 2 compatibility code
+    def getValueForGlyphs2():
+        if hasattr(baseObjectGlyph2, valueName):
+            if getattr(baseObjectGlyph2, valueName) is not None:
+                return getattr(baseObjectGlyph2, valueName)
+            else:
+                return defaultForGlyphs2
+        else:
+            return defaultForGlyphs2
+            
 	if hasattr(Glyphs, 'versionNumber'):
 		if Glyphs.versionNumber >= 3 :
-			# Glyphs 2 compatibility code
 			name = valueName.lower()
 			for m in baseObjectGlyph3.metrics:
 				if m.name.lower().replace(" ","") == name:
 					return m.position
 			return defaultForGlyphs3
 		else:
-			if hasattr(baseObjectGlyph2, valueName):
-				if getattr(baseObjectGlyph2, valueName) is not None:
-					return getattr(baseObjectGlyph2, valueName)
-				else:
-					return defaultForGlyphs2
-			else:
-				return defaultForGlyphs2
+			return getValueForGlyphs2()
 	else:
-			if hasattr(baseObjectGlyph2, valueName):
-				if getattr(baseObjectGlyph2, valueName) is not None:
-					return getattr(baseObjectGlyph2, valueName)
-				else:
-					return defaultForGlyphs2
-			else:
-				return defaultForGlyphs2
-
+		return getValueForGlyphs2()
 		
 
 
@@ -186,6 +182,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			topZones = [z for z in zones if z[1] > 0]
 			bottomZones = [z for z in zones if z[1] < 0]
 			return topZones, bottomZones
+
 		def zonesForLayer_Glyphs3( layer ):
 			zones = [(int(z.position), int(z.size)) for z in layer.metrics]
 			# search for global xHeight zone
@@ -193,6 +190,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 				if z.position == master.xHeight:
 					 zones += [(int(z.position), int(z.size))]
 					 break
+
 			topZones = [z for z in zones if z[1] > 0]
 			bottomZones = [z for z in zones if z[1] < 0]
 			return topZones, bottomZones
