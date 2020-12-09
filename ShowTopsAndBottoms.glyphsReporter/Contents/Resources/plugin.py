@@ -25,22 +25,32 @@ shoulderSet = (
 	)
 
 def getMetricsValueForGlyphs3(baseObjectGlyph2,baseObjectGlyph3,valueName, defaultForGlyphs3=0, defaultForGlyphs2=0):
-    if Glyphs.versionNumber >= 3 and hasattr(Glyphs, 'versionNumber') :
-        name = valueName.lower()
-        for m in baseObjectGlyph3.metrics:
-            if m.name.lower().replace(" ","") == name:
-                return m.position
-        return defaultForGlyphs3
-    else:
-        if hasattr(baseObjectGlyph2, valueName):
-            if getattr(baseObjectGlyph2, valueName) is not None:
-                return getattr(baseObjectGlyph2, valueName)
-            else:
-                return defaultForGlyphs2
-        else:
-            return defaultForGlyphs2
+	if hasattr(Glyphs, 'versionNumber'):
+		if Glyphs.versionNumber >= 3 :
+			# Glyphs 2 compatibility code
+			name = valueName.lower()
+			for m in baseObjectGlyph3.metrics:
+				if m.name.lower().replace(" ","") == name:
+					return m.position
+			return defaultForGlyphs3
+		else:
+			if hasattr(baseObjectGlyph2, valueName):
+				if getattr(baseObjectGlyph2, valueName) is not None:
+					return getattr(baseObjectGlyph2, valueName)
+				else:
+					return defaultForGlyphs2
+			else:
+				return defaultForGlyphs2
+	else:
+			if hasattr(baseObjectGlyph2, valueName):
+				if getattr(baseObjectGlyph2, valueName) is not None:
+					return getattr(baseObjectGlyph2, valueName)
+				else:
+					return defaultForGlyphs2
+			else:
+				return defaultForGlyphs2
 
-        
+		
 
 
 class ShowTopsAndBottoms(ReporterPlugin):
@@ -107,7 +117,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	@objc.python_method
 	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle, drawNumbers=True ):
-        
+		
 		bboxOrigin = bbox.origin
 		bboxSize   = bbox.size
 		left = bboxOrigin.x
@@ -169,11 +179,31 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		NSBezierPath.setDefaultLineWidth_( storedLineWidth )
 	
 	@objc.python_method
-	def zonesForMaster( self, master ):
-		zones = [(int(z.position), int(z.size)) for z in master.alignmentZones]
-		topZones = [z for z in zones if z[1] > 0]
-		bottomZones = [z for z in zones if z[1] < 0]
-		return topZones, bottomZones
+	def getZones(self, master, layer):
+		# Glyphs 2 compatibility code
+		def zonesForMaster_Glyphs2( master ):
+			zones = [(int(z.position), int(z.size)) for z in master.alignmentZones]
+			topZones = [z for z in zones if z[1] > 0]
+			bottomZones = [z for z in zones if z[1] < 0]
+			return topZones, bottomZones
+		def zonesForLayer_Glyphs3( layer ):
+			zones = [(int(z.position), int(z.size)) for z in layer.metrics]
+			# search for global xHeight zone
+			for z in master.alignmentZones:
+				if z.position == master.xHeight:
+					 zones += [(int(z.position), int(z.size))]
+					 break
+			topZones = [z for z in zones if z[1] > 0]
+			bottomZones = [z for z in zones if z[1] < 0]
+			return topZones, bottomZones
+		if hasattr(Glyphs, 'versionNumber'):
+			if Glyphs.versionNumber >= 3 :
+				return zonesForLayer_Glyphs3(layer)
+			else:
+				return zonesForMaster_Glyphs2(master)
+		else:
+			return zonesForMaster_Glyphs2(master)
+			
 	
 	@objc.python_method
 	def drawTopsAndBottoms( self, layer, defaultColor, drawNumbers=True ):
@@ -183,7 +213,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			if masterForTheLayer:
 				xHeight = masterForTheLayer.xHeight
 				italicAngle = masterForTheLayer.italicAngle
-				topZones, bottomZones = self.zonesForMaster( masterForTheLayer )
+				topZones, bottomZones = self.getZones( masterForTheLayer, layer )
 				self.drawTop( bbox, defaultColor, topZones, xHeight, italicAngle, drawNumbers=drawNumbers )
 				self.drawBottom( bbox, defaultColor, bottomZones, xHeight, italicAngle, drawNumbers=drawNumbers )
 	
@@ -228,15 +258,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 					-1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"baseline"), # 1u below the baseline
 					-1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"descender") if glyph.subCategory == "Lowercase" else None,
 				)
-				# heights = (
-				# 	1.0+masterForTheLayer.ascender if glyph.subCategory == "Lowercase" else None,
-				# 	1.0+masterForTheLayer.capHeight if glyph.subCategory != "Lowercase" else None,
-				# 	1.0+int(masterForTheLayer.customParameters["smallCapHeight"]) if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
-				# 	1.0+int(masterForTheLayer.customParameters["shoulderHeight"]) if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
-				# 	1.0+masterForTheLayer.xHeight if glyph.subCategory == "Lowercase" else None,
-				# 	-1.0, # 1u below the baseline
-				# 	-1.0+masterForTheLayer.descender if glyph.subCategory == "Lowercase" else None,
-				# )
+
 				for thisPath in layer.paths:
 					for thisNode in thisPath.nodes:
 						if thisNode.y in heights:
