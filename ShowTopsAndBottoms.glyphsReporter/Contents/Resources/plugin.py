@@ -24,6 +24,25 @@ shoulderSet = (
 	"arabic", "hebrew", "thai", "lao", "tibet", "myanmar"
 	)
 
+def getMetricsValueForGlyphs3(baseObjectGlyph2,baseObjectGlyph3,valueName, defaultForGlyphs3=0, defaultForGlyphs2=0):
+    if Glyphs.versionNumber >= 3 and hasattr(Glyphs, 'versionNumber') :
+        name = valueName.lower()
+        for m in baseObjectGlyph3.metrics:
+            if m.name.lower().replace(" ","") == name:
+                return m.position
+        return defaultForGlyphs3
+    else:
+        if hasattr(baseObjectGlyph2, valueName):
+            if getattr(baseObjectGlyph2, valueName) is not None:
+                return getattr(baseObjectGlyph2, valueName)
+            else:
+                return defaultForGlyphs2
+        else:
+            return defaultForGlyphs2
+
+        
+
+
 class ShowTopsAndBottoms(ReporterPlugin):
 	@objc.python_method
 	def settings(self):
@@ -88,6 +107,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	@objc.python_method
 	def drawTopOrBottom( self, bbox, defaultColor, zones, top, xHeight, italicAngle, drawNumbers=True ):
+        
 		bboxOrigin = bbox.origin
 		bboxSize   = bbox.size
 		left = bboxOrigin.x
@@ -200,14 +220,23 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			glyph = layer.parent
 			if glyph:
 				heights = (
-					1.0+masterForTheLayer.ascender if glyph.subCategory == "Lowercase" else None,
-					1.0+masterForTheLayer.capHeight if glyph.subCategory != "Lowercase" else None,
+					1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"ascender") if glyph.subCategory == "Lowercase" else None,
+					1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"capHeight") if glyph.subCategory != "Lowercase" else None,
 					1.0+int(masterForTheLayer.customParameters["smallCapHeight"]) if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
 					1.0+int(masterForTheLayer.customParameters["shoulderHeight"]) if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
 					1.0+masterForTheLayer.xHeight if glyph.subCategory == "Lowercase" else None,
-					-1.0, # 1u below the baseline
-					-1.0+masterForTheLayer.descender if glyph.subCategory == "Lowercase" else None,
+					-1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"baseline"), # 1u below the baseline
+					-1.0+getMetricsValueForGlyphs3(masterForTheLayer,layer,"descender") if glyph.subCategory == "Lowercase" else None,
 				)
+				# heights = (
+				# 	1.0+masterForTheLayer.ascender if glyph.subCategory == "Lowercase" else None,
+				# 	1.0+masterForTheLayer.capHeight if glyph.subCategory != "Lowercase" else None,
+				# 	1.0+int(masterForTheLayer.customParameters["smallCapHeight"]) if masterForTheLayer.customParameters["smallCapHeight"] and glyph.subCategory == "Smallcaps" else None,
+				# 	1.0+int(masterForTheLayer.customParameters["shoulderHeight"]) if masterForTheLayer.customParameters["shoulderHeight"] and glyph.script in shoulderSet else None,
+				# 	1.0+masterForTheLayer.xHeight if glyph.subCategory == "Lowercase" else None,
+				# 	-1.0, # 1u below the baseline
+				# 	-1.0+masterForTheLayer.descender if glyph.subCategory == "Lowercase" else None,
+				# )
 				for thisPath in layer.paths:
 					for thisNode in thisPath.nodes:
 						if thisNode.y in heights:
