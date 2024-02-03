@@ -13,9 +13,9 @@
 	<key>CFBundleName</key>
 	<string>ShowTopsAndBottoms</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.0.9</string>
+	<string>2.0.10</string>
 	<key>CFBundleVersion</key>
-	<string>30</string>
+	<string>31</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright, Rainer Erich Scheichelbauer, 2015-2018</string>
 	<key>NSPrincipalClass</key>
@@ -29,6 +29,6 @@
 	<key>productPageURL</key>
 	<string>https://github.com/mekkablue/ShowTopsAndBottoms</string>
 	<key>productReleaseNotes</key>
-	<string>update binary files for Glyphs3</string>
+	<string>Survive GSControlLayer</string>
 </dict>
 </plist>

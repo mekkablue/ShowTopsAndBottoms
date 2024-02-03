@@ -53,12 +53,12 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	@objc.python_method
 	def settings(self):
 		self.menuName = Glyphs.localize({
-			'en': u'Tops and Bottoms',
-			'es': u'superiores e inferiores',
-			'de': u'Höchste und tiefste Stellen',
-			'nl': u'hoogste en laagste plekken',
-			'fr': u'les hauts et les bas',
-			'zh': u'🚧底部到顶点的数值',
+			'en': 'Tops and Bottoms',
+			'es': 'superiores e inferiores',
+			'de': 'Höchste und tiefste Stellen',
+			'nl': 'hoogste en laagste plekken',
+			'fr': 'les hauts et les bas',
+			'zh': '🚧底部到顶点的数值',
 		})
 		
 		self.keyboardShortcut = 't'
@@ -68,21 +68,21 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		self.generalContextMenus = [
 			{
 				'name': Glyphs.localize({
-					'en': u"‘Show Tops and Bottoms’ Options:", 
-					'de': u"Einstellungen für »Höchste und tiefste Stellen anzeigen«:", 
-					'es': u"Opciones para ‘Mostrar superiores e inferiores’:", 
-					'nl': u"Instellingen voor ‘Toon hoogste en laagste plekken’:", 
-					'fr': u"Options pour «Afficher les hauts et les bas»:",
+					'en': "‘Show Tops and Bottoms’ Options:", 
+					'de': "Einstellungen für »Höchste und tiefste Stellen anzeigen«:", 
+					'es': "Opciones para ‘Mostrar superiores e inferiores’:", 
+					'nl': "Instellingen voor ‘Toon hoogste en laagste plekken’:", 
+					'fr': "Options pour «Afficher les hauts et les bas»:",
 					}), 
 				'action': None,
 			},
 			{
 				'name': Glyphs.localize({
-					'en': u"Mark nodes just off metric lines",
-					'de': u"Punkte markieren, wenn sie die Linie knapp verpassen",
-					'es': u"Marcar nodos que están cerca de la línea métrica",
-					'nl': u"Punten markeren als ze net naast de hoogtes liggen",
-					'fr': u"Indiquer points qui se trouvent juste à côté des lignes",
+					'en': "Mark nodes just off metric lines",
+					'de': "Punkte markieren, wenn sie die Linie knapp verpassen",
+					'es': "Marcar nodos que están cerca de la línea métrica",
+					'nl': "Punten markeren als ze net naast de hoogtes liggen",
+					'fr': "Indiquer points qui se trouvent juste à côté des lignes",
 					}), 
 				'action': self.toggleMarkNodesOffMetrics,
 				'state': Glyphs.defaults[ "com.mekkablue.ShowTopsAndBottoms.markNodesOffMetrics" ],
@@ -205,6 +205,8 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	@objc.python_method
 	def drawTopsAndBottoms( self, layer, defaultColor, drawNumbers=True ):
+		if type(layer) == GSControlLayer:
+			return
 		bbox = layer.bounds
 		if bbox.size.height > 0.0:
 			masterForTheLayer = layer.associatedFontMaster()
@@ -239,6 +241,9 @@ class ShowTopsAndBottoms(ReporterPlugin):
 	
 	@objc.python_method
 	def markNodesOffMetrics( self, layer, color=NSColor.colorWithRed_green_blue_alpha_(1.0, 0.6, 0.1, 0.7) ):
+		if type(layer) == GSControlLayer:
+			return
+
 		if layer.paths:
 			# set the color for drawing:
 			color.set()
