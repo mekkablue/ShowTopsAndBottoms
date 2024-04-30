@@ -149,7 +149,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 			zoneEnd = zoneBegin + thisZone[1]
 			zoneBottom = min((zoneBegin, zoneEnd))
 			zoneTop = max((zoneBegin, zoneEnd))
-			if position <= zoneTop and position >= zoneBottom:
+			if zoneTop >= position >= zoneBottom:
 				drawColor = defaultColor
 
 		# set line attributes:
@@ -221,7 +221,7 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		# calculate handle size:
 		handleSizes = (5, 8, 12)  # possible user settings
 		handleSizeIndex = Glyphs.handleSize  # user choice in Glyphs > Preferences > User Preferences > Handle Size
-		handleSize = handleSizes[handleSizeIndex] * self.getScale()**-0.9  # scaled diameter
+		handleSize = handleSizes[handleSizeIndex] * self.getScale() ** -0.9  # scaled diameter
 
 		# offcurves are a little smaller:
 		if node.type == OFFCURVE:
