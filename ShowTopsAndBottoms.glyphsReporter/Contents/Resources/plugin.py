@@ -103,7 +103,11 @@ class ShowTopsAndBottoms(ReporterPlugin):
 		"""
 		Don't activate if text or pan (hand) tool are active.
 		"""
-		currentController = self.controller.view().window().windowController()
+		try:
+			currentController = self.controller.view().window().windowController()
+		except AttributeError:
+			# controller, view or window not available (e.g. during window setup/teardown)
+			return False
 		if currentController:
 			tool = currentController.toolDrawDelegate()
 			handToolIsActive = tool.isKindOfClass_(NSClassFromString("GlyphsToolHand"))
